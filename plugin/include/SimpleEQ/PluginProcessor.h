@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 
 namespace audio_plugin {
 
@@ -40,7 +41,7 @@ public:
   /*** User defined functions ***/ 
 
   /**
-   * @brief Create the parameter layout for the plugin
+   * @brief Create the parameter layout for the plugin, all later used parameters are defined here
    * @return The parameter layout
   */
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -51,6 +52,26 @@ public:
   juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
+  /**
+   * @brief Alias for filter object
+  */
+  using Filter = juce::dsp::IIR::Filter<float>;
+
+  /**
+   * @brief Alias for filter chain holding differen type of filters
+  */
+  using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+  /**
+   * @brief Alias for the mono chain holding the Signal filter chain
+  */
+  using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+  /**
+   * @brief The Stereo Chain Objects
+  */
+  MonoChain leftChain, rightChain;
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQ)
 };
 } // namespace audio_plugin
