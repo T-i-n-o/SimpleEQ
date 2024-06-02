@@ -3,7 +3,7 @@
 
 namespace audio_plugin {
 SimpleEQEditor::SimpleEQEditor(
-    SimpleEQ &p)
+    SimpleEQAudioProcessor &p)
     : AudioProcessorEditor(&p), processorRef(p) {
   juce::ignoreUnused(processorRef);
   // Make sure that before the constructor has finished, you've set the

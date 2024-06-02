@@ -4,7 +4,7 @@
 namespace audio_plugin_test {
 
 TEST(AudioProcessor, Foo) {
-  audio_plugin::SimpleEQ processor{};
+  audio_plugin::SimpleEQAudioProcessor processor{};
 }
 
 } // namespace audio_plugin_test

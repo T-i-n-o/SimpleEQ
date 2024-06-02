@@ -5,17 +5,44 @@
 
 namespace audio_plugin {
 
-class SimpleEQ : public juce::AudioProcessor 
+/**
+ * @brief The ChainSettings struct holds the settings for the filter chain
+*/
+struct ChainSettings {
+  float peakFreq {0}, peakGainInDecibels {0}, peakQuality {1.f};
+  float lowCutFreq {0}, highCutFreq {0};
+  int lowCutSlope {0}, highCutSlope {0};
+};
+
+/**
+ * @brief Get the Chain Settings object
+ * @param apvts The AudioProcessorValueTreeState object
+ * @return The ChainSettings object
+*/
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
+
+/**
+ * @brief The Audio Processor class for the SimpleEQ plugin
+*/
+class SimpleEQAudioProcessor : public juce::AudioProcessor 
 {
 public:
-  SimpleEQ();
-  ~SimpleEQ() override;
+  SimpleEQAudioProcessor();
+  ~SimpleEQAudioProcessor() override;
 
+  /**
+   * @brief prepareToPlay is called before the plugin starts processing audio
+  */
   void prepareToPlay(double sampleRate, int samplesPerBlock) override;
   void releaseResources() override;
 
   bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
 
+  /**
+   * @brief processBlock is called to process the audio
+   * @param buffer The audio buffer
+   * @param midiMessages The midi buffer
+  */
   void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
   using AudioProcessor::processBlock;
 
@@ -72,6 +99,15 @@ private:
   */
   MonoChain leftChain, rightChain;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQ)
+  /**
+   * @brief Enum for the Chain positions in the filter chain
+  */
+  enum ChainPositions {
+    LowCut,
+    Peak,
+    HighCut
+  }; 
+
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };
 } // namespace audio_plugin

@@ -6,7 +6,7 @@ namespace audio_plugin {
 
 class SimpleEQEditor : public juce::AudioProcessorEditor {
 public:
-  explicit SimpleEQEditor(SimpleEQ &);
+  explicit SimpleEQEditor(SimpleEQAudioProcessor&);
   ~SimpleEQEditor() override;
 
   void paint(juce::Graphics &) override;
@@ -15,7 +15,7 @@ public:
 private:
   // This reference is provided as a quick way for your editor to
   // access the processor object that created it.
-  SimpleEQ &processorRef;
+  SimpleEQAudioProcessor &processorRef;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQEditor)
 };
