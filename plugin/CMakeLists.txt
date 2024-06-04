@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Version is needed by JUCE.
-project(AudioPlugin VERSION 0.1.0)
+project(SimpleEQ VERSION 0.1.0)
 
 # Adding a directory with the library/application name as a subfolder of the
 # include folder is a good practice. It helps avoid name clashes later on.
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/SimpleEQ")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}")
 
 # Adds a plugin target (that's basically what the Projucer does).
 juce_add_plugin(${PROJECT_NAME}
@@ -17,6 +17,16 @@ juce_add_plugin(${PROJECT_NAME}
     PLUGIN_CODE EXPL # change this
     FORMATS VST3 Standalone # may change this
     PRODUCT_NAME "SimpleEQ" # change this
+)
+
+add_custom_target(run
+    COMMAND ./plugin/AudioPlugin_artefacts/Standalone/${PROJECT_NAME}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+add_custom_target(runHost
+    COMMAND ./libs/juce/extras/AudioPluginHost/AudioPluginHost_artefacts/AudioPluginHost
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
 # Sets the source files of the plugin project.

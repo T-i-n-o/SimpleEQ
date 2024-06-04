@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(AudioPluginTest)
+project(SimpleEQTests)
 
 # Signals to CMake that we want to run tests from this directory.
 enable_testing()
 
 # Creates the test console application.
 add_executable(${PROJECT_NAME}
-    source/AudioProcessorTest.cpp)
+    source/AudioProcessorTest.cpp) 
 
 # Sets the necessary include directories: ours, JUCE's, and googletest's.
 target_include_directories(${PROJECT_NAME}
@@ -19,7 +19,7 @@ target_include_directories(${PROJECT_NAME}
 # Thanks to the fact that we link against the gtest_main library, we don't have to write the main function ourselves.
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        AudioPlugin
+        SimpleEQ
         GTest::gtest_main)
 
 # Enables all warnings and treats warnings as errors.

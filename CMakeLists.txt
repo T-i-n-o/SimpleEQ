@@ -56,4 +56,5 @@ add_subdirectory(plugin)
 add_subdirectory(test)
 
 # Add Juce Host to test builds
-add_subdirectory(libs/juce/extras/AudioPluginHost)
+#add_subdirectory(libs/juce/extras/AudioPluginHost)
+
