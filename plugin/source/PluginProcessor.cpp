@@ -88,11 +88,8 @@ void SimpleEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBloc
   leftChain.prepare(spec);
   rightChain.prepare(spec);
 
-  // get chain settings from the plugin parameter object
-  auto chainSettings = getChainSettings(apvts);
-
   // update Filters
-  updateFilters(chainSettings);
+  updateFilters();
 }
 
 void SimpleEQAudioProcessor::releaseResources() 
@@ -142,10 +139,8 @@ void SimpleEQAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
-  auto chainSettings = getChainSettings(apvts);
-
   // update Filters
-  updateFilters(chainSettings);
+  updateFilters();
 
   // This is the place where you'd normally do the guts of your plugin's
   // audio processing...
@@ -167,8 +162,8 @@ bool SimpleEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor *SimpleEQAudioProcessor::createEditor() 
 {
-  //return new SimpleEQAudioProcessorEditor(*this);
-  return new juce::GenericAudioProcessorEditor(*this);
+  return new SimpleEQEditor(*this);
+  //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 void SimpleEQAudioProcessor::getStateInformation(juce::MemoryBlock &destData) 
@@ -176,7 +171,8 @@ void SimpleEQAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
   // You should use this method to store your parameters in the memory block.
   // You could do that either as raw data, or use the XML or ValueTree classes
   // as intermediaries to make it easy to save and load complex data.
-  juce::ignoreUnused(destData);
+  juce::MemoryOutputStream stream(destData, true);
+  apvts.state.writeToStream(stream);
 }
 
 void SimpleEQAudioProcessor::setStateInformation(const void *data, int sizeInBytes) 
@@ -184,7 +180,11 @@ void SimpleEQAudioProcessor::setStateInformation(const void *data, int sizeInByt
   // You should use this method to restore your parameters from this memory
   // block, whose contents will have been created by the getStateInformation()
   // call.
-  juce::ignoreUnused(data, sizeInBytes);
+  auto tree = juce::ValueTree::readFromData(data, static_cast<size_t>(sizeInBytes));
+  if (tree.isValid()) {
+    apvts.replaceState(tree);
+    
+  }
 }
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts) 
@@ -224,10 +224,10 @@ void SimpleEQAudioProcessor::updateLowCutFilters(const ChainSettings &chainSetti
                                                                                                       2 * (chainSettings.lowCutSlope + 1));
 
   auto &leftLowCut = leftChain.get<ChainPositions::LowCut>();
-  updateFilters(leftLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
-  
   auto &rightLowCut = rightChain.get<ChainPositions::LowCut>();
-  updateFilters(rightLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
+  
+  updateCutFilters(leftLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
+  updateCutFilters(rightLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
 }
 
 void SimpleEQAudioProcessor::updateHighCutFilters(const ChainSettings &chainSettings) 
@@ -237,14 +237,16 @@ void SimpleEQAudioProcessor::updateHighCutFilters(const ChainSettings &chainSett
                                                                                                       2 * (chainSettings.highCutSlope + 1));
   
   auto &leftHighCut = leftChain.get<ChainPositions::HighCut>();
-  updateFilters(leftHighCut, highCutCoefficients, chainSettings.highCutSlope);
-
   auto &rightHighCut = rightChain.get<ChainPositions::HighCut>();
-  updateFilters(rightHighCut, highCutCoefficients, chainSettings.highCutSlope);
+
+  updateCutFilters(leftHighCut, highCutCoefficients, chainSettings.highCutSlope);
+  updateCutFilters(rightHighCut, highCutCoefficients, chainSettings.highCutSlope);
 }
 
-void SimpleEQAudioProcessor::updateFilters(const ChainSettings &chainSettings) 
+void SimpleEQAudioProcessor::updateFilters() 
 {
+  auto chainSettings = getChainSettings(apvts);
+
   updateLowCutFilters(chainSettings);
   updateHighCutFilters(chainSettings);
   updatePeakFilter(chainSettings);

@@ -20,7 +20,7 @@ juce_add_plugin(${PROJECT_NAME}
 )
 
 add_custom_target(run
-    COMMAND ./plugin/AudioPlugin_artefacts/Standalone/${PROJECT_NAME}
+    COMMAND ./plugin/SimpleEQ_artefacts/Standalone/${PROJECT_NAME}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 

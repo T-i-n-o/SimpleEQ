@@ -69,7 +69,14 @@ public:
   const juce::String getProgramName(int index) override;
   void changeProgramName(int index, const juce::String &newName) override;
 
+  /**
+   * @brief Get the state information of all plugin parameters
+  */
   void getStateInformation(juce::MemoryBlock &destData) override;
+
+  /**
+   * @brief Set the state information of all plugin parameters
+  */
   void setStateInformation(const void *data, int sizeInBytes) override;
 
   /*** User defined functions ***/ 
@@ -146,7 +153,7 @@ private:
    * @param CoefficientType The data type of the coefficients
   */
   template <typename ChainType, typename CoefficientType>
-  void updateFilters(ChainType &chain, const CoefficientType &coefficients, const Slope &slope)
+  void updateCutFilters(ChainType &chain, const CoefficientType &coefficients, const Slope &slope)
   {
     chain.template setBypassed<0>(true);
     chain.template setBypassed<1>(true);
@@ -169,7 +176,7 @@ private:
   void updateLowCutFilters(const ChainSettings &chainSettings);
   void updateHighCutFilters(const ChainSettings &chainSettings);
 
-  void updateFilters(const ChainSettings &chainSettings);
+  void updateFilters();
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQAudioProcessor)
 };
