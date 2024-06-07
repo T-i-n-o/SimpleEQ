@@ -2,9 +2,15 @@
 #include "SimpleEQ/PluginProcessor.h"
 
 namespace audio_plugin {
-SimpleEQEditor::SimpleEQEditor(
-    SimpleEQAudioProcessor &p)
-    : AudioProcessorEditor(&p), processorRef(p) {
+SimpleEQEditor::SimpleEQEditor(SimpleEQAudioProcessor &p) : AudioProcessorEditor(&p), processorRef(p), 
+  peakFreqSliderAttachment(processorRef.apvts, "Peak Freq", peakFreqSlider),
+  peakGainSliderAttachment(processorRef.apvts, "Peak Gain", peakGainSlider),
+  peakQualitySliderAttachment(processorRef.apvts, "Peak Quality", peakQualitySlider),
+  lowCutFreqSliderAttachment(processorRef.apvts, "LowCut Freq", lowCutFreqSlider),
+  highCutFreqSliderAttachment(processorRef.apvts, "HighCut Freq", highCutFreqSlider),
+  lowCutSlopeSliderAttachment(processorRef.apvts, "LowCut Slope", lowCutSlopeSlider),
+  highCutSlopeSliderAttachment(processorRef.apvts, "HighCut Slope", highCutSlopeSlider)
+{
   juce::ignoreUnused(processorRef);
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.

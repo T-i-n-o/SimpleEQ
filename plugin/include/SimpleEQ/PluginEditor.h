@@ -28,6 +28,13 @@ private:
 
   std::vector<juce::Component*> getComps();
 
+  using APVTS = juce::AudioProcessorValueTreeState;
+  using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+
+  Attachment peakFreqSliderAttachment, peakGainSliderAttachment, peakQualitySliderAttachment; 
+  Attachment lowCutFreqSliderAttachment, highCutFreqSliderAttachment;
+  Attachment lowCutSlopeSliderAttachment, highCutSlopeSliderAttachment;
+
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleEQEditor)
 };
 } // namespace audio_plugin
