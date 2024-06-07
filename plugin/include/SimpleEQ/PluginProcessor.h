@@ -28,6 +28,21 @@ struct ChainSettings {
 */
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
 
+using Filter = juce::dsp::IIR::Filter<float>;
+
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+/**
+ * @brief Enum for the Chain positions in the filter chain
+*/
+enum ChainPositions {
+  LowCut,
+  Peak,
+  HighCut
+}; 
+
 /**
  * @brief The Audio Processor class for the SimpleEQ plugin
 */
@@ -93,34 +108,11 @@ public:
   juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
-  /**
-   * @brief Alias for filter object
-  */
-  using Filter = juce::dsp::IIR::Filter<float>;
-
-  /**
-   * @brief Alias for filter chain holding differen type of filters
-  */
-  using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-
-  /**
-   * @brief Alias for the mono chain holding the Signal filter chain
-  */
-  using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
 
   /**
    * @brief The Stereo Chain Objects
   */
   MonoChain leftChain, rightChain;
-
-  /**
-   * @brief Enum for the Chain positions in the filter chain
-  */
-  enum ChainPositions {
-    LowCut,
-    Peak,
-    HighCut
-  }; 
 
   /**
    * @brief Update the Peak filter
