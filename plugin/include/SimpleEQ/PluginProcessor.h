@@ -44,6 +44,15 @@ enum ChainPositions {
 }; 
 
 /**
+ * @brief Alias for the Coefficients object
+*/
+using Coefficients = Filter::CoefficientsPtr;
+
+void updateCoefficients(Coefficients &old, const Coefficients &replacements);
+
+Coefficients makePeakFilter(const ChainSettings &chainSettings, double sampleRate);
+
+/**
  * @brief The Audio Processor class for the SimpleEQ plugin
 */
 class SimpleEQAudioProcessor : public juce::AudioProcessor 
@@ -118,13 +127,6 @@ private:
    * @brief Update the Peak filter
   */
   void updatePeakFilter(const ChainSettings &chainSettings);
-
-  /**
-   * @brief Alias for the Coefficients object
-  */
-  using Coefficients = Filter::CoefficientsPtr;
-
-  static void updateCoefficients(Coefficients &old, const Coefficients &replacements);
 
   /**
    * @brief Update coefficients for the filter chain 
