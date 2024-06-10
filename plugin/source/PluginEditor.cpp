@@ -20,10 +20,24 @@ SimpleEQEditor::SimpleEQEditor(SimpleEQAudioProcessor &p) : AudioProcessorEditor
     addAndMakeVisible(comp);
   }
 
+  const auto& params = processorRef.getParameters();
+  for(auto param : params) {
+    param->addListener(this);
+  }
+
+  startTimerHz(60);
+
   setSize(800, 600);
+  parametersChanged.set(true);
 }
 
-SimpleEQEditor::~SimpleEQEditor() {}
+SimpleEQEditor::~SimpleEQEditor() 
+{
+  const auto& params = processorRef.getParameters();
+  for(auto param : params) {
+    param->removeListener(this);
+  }
+}
 
 void SimpleEQEditor::paint(juce::Graphics &g) {
   // (Our component is opaque, so we must completely fill the background with a
@@ -132,11 +146,18 @@ void SimpleEQEditor::resized() {
 
 void SimpleEQEditor::parameterValueChanged(int parameterIndex, float newValue) 
 {
+  // ignore unused parameterIndex
+  juce::ignoreUnused(parameterIndex);
+  juce::ignoreUnused(newValue);
+  
   parametersChanged.set(true);
 }
 
 void SimpleEQEditor::parameterGestureChanged(int parameterIndex, bool gestureIsStarting) 
 {
+  // ignore unused parameterIndex
+  juce::ignoreUnused(parameterIndex);
+
   if(!gestureIsStarting) {
     parametersChanged.set(false);
   }
@@ -146,7 +167,20 @@ void SimpleEQEditor::timerCallback()
 {
   if(parametersChanged.compareAndSetBool(false, true)) {
     // update the UI
-    // repaint();
+    auto chainSettings = getChainSettings(processorRef.apvts);
+    auto sampleRate = processorRef.getSampleRate();
+
+    auto peakCoefficients = makePeakFilter(chainSettings, sampleRate);
+
+    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, sampleRate);
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, sampleRate);
+
+    updateCutFilters(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilters(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+
+    repaint();
   }
 
 }
